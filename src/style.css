@@ -62,8 +62,6 @@ button:hover {
   height: 80px;
   width: auto;
 
-  display: flex;
-
   background: rgba(0, 0, 0, 0.55);
   box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4.5px);
