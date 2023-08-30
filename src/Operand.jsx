@@ -4,7 +4,9 @@ import React from 'react';
 export default function Operand({ dispatch, operation }) {
   return (
     <button
-      onClick={() => dispatch({ type: calcActions.CHOOSE, payload: operation })}
+      onClick={() =>
+        dispatch({ type: calcActions.CHOOSE, payload: { operation } })
+      }
     >
       {operation}
     </button>

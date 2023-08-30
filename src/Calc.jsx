@@ -13,11 +13,28 @@ export const calcActions = {
 const reducer = (state, { type, payload }) => {
   switch (type) {
     case 'ADD':
+      if (state.overwrite) {
+        return {
+          ...state,
+          currOperand: payload.digit,
+          overwrite: false,
+        };
+      }
   }
 };
 
+const INT_FORMATTER = new Intl.NumberFormat('en-us', {
+  maximumFractionDigits: 0,
+});
+function pushOperand(operand) {
+  if (operand == null) return;
+  const [int, decimal] = operand.split('.');
+  if (dec == null) return INT_FORMATTER.format(int);
+  return `${INT_FORMATTER.format(int)}.${dec}`;
+}
+
 export default function Calc() {
-  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
+  const [{ currOperand, prevOperand, operation }, dispatch] = useReducer(
     reducer,
     {}
   );
@@ -30,8 +47,10 @@ export default function Calc() {
 
         <div className="display" id="display">
           <div className="outputWrap">
-            <div className="prev">1 + 2 =333</div>
-            <div className="next">3333</div>
+            <div className="prev">
+              {pushOperand(currOperand)} {operation}
+            </div>
+            <div className="curr">{pushOperand(currOperand)}</div>
           </div>
         </div>
         <div className="btn-prim">
