@@ -12,7 +12,7 @@ export const calcActions = {
 };
 const reducer = (state, { type, payload }) => {
   switch (type) {
-    case 'ADD':
+    case calcActions.ADD:
       if (state.overwrite) {
         return {
           ...state,
@@ -20,15 +20,109 @@ const reducer = (state, { type, payload }) => {
           overwrite: false,
         };
       }
+      if (payload.digit == '.' && state.currOperand.includes('.')) {
+        return state;
+      }
+      if (payload.digit == '0' && state.currOperand == '0') {
+        return state;
+      }
+      return {
+        ...state,
+        currOperand: `${state.currOperand || ''}${payload.digit}`,
+      };
+
+    case calcActions.CHOOSE:
+      if (state.currOperand == null && state.prevOperand == null) {
+        return state;
+      }
+      if (state.prevOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          prevOperand: state.currOperand,
+          currOperand: null,
+        };
+      }
+      return {
+        ...state,
+        operation: payload.operation,
+        prevOperand: valuate(state),
+        currOperand: null,
+      };
+
+    case calcActions.CLEAR:
+      return {};
+
+    case calcActions.DEL:
+      if (state.overwrite) {
+        return {
+          ...state,
+          overwrite: false,
+          currOperand: null,
+        };
+      }
+      if (state.currOperand === null) {
+        return state;
+      }
+      if (state.currOperand.length === 1) {
+        return {
+          ...state,
+          currOperand: null,
+        };
+      }
+      return {
+        ...state,
+        currOperand: state.currOperand.slice(0, -1),
+      };
+
+    case calcActions.CHECK:
+      if (
+        state.operation == null ||
+        state.currOperand == null ||
+        state.prevOperand == null
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        overwrite: true,
+        operation: null,
+        prevOperand: null,
+        currOperand: valuate(state),
+      };
   }
 };
 
 const INT_FORMATTER = new Intl.NumberFormat('en-us', {
   maximumFractionDigits: 0,
 });
+
+function valuate({ currOperand, prevOperand, operation }) {
+  const curr = parseFloat(currOperand);
+  const prev = parseFloat(prevOperand);
+
+  if (isNaN(curr) || isNaN(prev)) return '';
+  let calc = '';
+  switch (operation) {
+    case '/':
+      calc = prev / curr;
+      break;
+    case '*':
+      calc = prev * curr;
+      break;
+    case '+':
+      calc = prev + curr;
+      break;
+    case '-':
+      calc = prev - curr;
+      break;
+  }
+  return calc.toString();
+}
+
 function pushOperand(operand) {
   if (operand == null) return;
-  const [int, decimal] = operand.split('.');
+  const [int, dec] = operand.split('.');
   if (dec == null) return INT_FORMATTER.format(int);
   return `${INT_FORMATTER.format(int)}.${dec}`;
 }
@@ -54,10 +148,16 @@ export default function Calc() {
           </div>
         </div>
         <div className="btn-prim">
-          <button className="span1" id="clear">
+          <button
+            className="span1"
+            id="clear"
+            onClick={() => dispatch({ type: calcActions.CLEAR })}
+          >
             AC
           </button>
-          <button> Del</button>
+          <button onClick={() => dispatch({ type: calcActions.DEL })}>
+            Del
+          </button>
 
           <Operand id="divide" operation="/" dispatch={dispatch} />
 
@@ -75,8 +175,13 @@ export default function Calc() {
 
           <Operand id="add" operation="+" dispatch={dispatch} />
           <Digit id="zero" digit="0" dispatch={dispatch} />
-          <button id="decimal"> .</button>
-          <button className="span2" id="equals">
+          <Digit id="decimal" digit="." dispatch={dispatch} />
+
+          <button
+            className="span2"
+            id="equals"
+            onClick={() => dispatch({ type: calcActions.CHECK })}
+          >
             =
           </button>
         </div>
