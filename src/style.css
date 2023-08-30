@@ -74,13 +74,16 @@ button:hover {
 
   justify-content: space-around;
   align-items: flex-end;
+  word-wrap: break-word;
+  overflow: hidden;
+  overflow-x: scroll;
 }
 
-.outputWrap .prev {
+.prev {
   color: rgba(255, 255, 255, 0.75);
   font-size: 1.5rem;
 }
-.outputWrap .curr {
+.curr {
   color: white;
   font-size: 2.5rem;
 }

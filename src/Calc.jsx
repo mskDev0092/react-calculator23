@@ -12,6 +12,7 @@ export const calcActions = {
 };
 const reducer = (state, { type, payload }) => {
   switch (type) {
+    // 1. ADD Digits
     case calcActions.ADD:
       if (state.overwrite) {
         return {
@@ -20,17 +21,18 @@ const reducer = (state, { type, payload }) => {
           overwrite: false,
         };
       }
-      if (payload.digit == '.' && state.currOperand.includes('.')) {
+      if (payload.digit === '0' && state.currOperand === '0') {
         return state;
       }
-      if (payload.digit == '0' && state.currOperand == '0') {
+      if (payload.digit === '.' && state.currOperand.includes('.')) {
         return state;
       }
+
       return {
         ...state,
         currOperand: `${state.currOperand || ''}${payload.digit}`,
       };
-
+    // Choose operation type
     case calcActions.CHOOSE:
       if (state.currOperand == null && state.prevOperand == null) {
         return state;
@@ -49,10 +51,10 @@ const reducer = (state, { type, payload }) => {
         prevOperand: valuate(state),
         currOperand: null,
       };
-
+    // Clears the screen
     case calcActions.CLEAR:
       return {};
-
+    // Delete one digit
     case calcActions.DEL:
       if (state.overwrite) {
         return {
@@ -74,7 +76,7 @@ const reducer = (state, { type, payload }) => {
         ...state,
         currOperand: state.currOperand.slice(0, -1),
       };
-
+    // Calculate
     case calcActions.CHECK:
       if (
         state.operation == null ||
