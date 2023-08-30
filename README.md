@@ -1,10 +1,10 @@
 # React Calculator App
 
-Completed this project by freeCodeCamp using React JS.
+> Completed this project by freeCodeCamp using React JS.
 
 ## Learned
 
-Developed this calculator with help of react reducer hook and implemented Immediate Execution Logic into this version of app. 
+> Developed this calculator with help of react reducer hook and implemented Immediate Execution Logic into this version of app. 
 
 ## Screenshots
 
